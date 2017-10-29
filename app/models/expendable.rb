@@ -1,0 +1,2 @@
+class Expendable < ApplicationRecord
+end
