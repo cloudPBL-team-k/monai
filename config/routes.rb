@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get '/things/search', to: 'things#search'
   resources :expendables
   resources :bought_things
   resources :buy_things

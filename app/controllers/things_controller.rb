@@ -8,6 +8,23 @@ class ThingsController < ApplicationController
     render json: @things
   end
 
+  # GET /things/search
+  def search
+    jan_code = params[:jancode]
+    if !Thing.exists?(jancode: jan_code)
+      # DBに商品がない
+      outer_api = OuterApi.new
+      @thing = outer_api.get_thing_from_outer_api(jan_code)
+      @thing.save
+    else
+      # DBに商品がある
+      puts("Exist")
+      @thing = Thing.where(:jancode => jan_code)
+    end
+
+    render json: @thing
+  end
+
   # GET /things/1
   def show
     render json: @thing

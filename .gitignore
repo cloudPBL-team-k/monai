@@ -18,3 +18,9 @@
 !/tmp/.keep
 
 .byebug_history
+
+# Ignore app keys json file
+app_ids.json
+
+# Ignore swp file
+*.swp
