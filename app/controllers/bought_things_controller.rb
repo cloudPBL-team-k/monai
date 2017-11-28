@@ -20,21 +20,27 @@ class BoughtThingsController < ApplicationController
     if @bought_thing.save
       # ここで過去の購入記録を参照し初回購入かどうか見て、初回であれば1990-01-01にセット、そうでなければ過去の購入間隔の平均値をセットする
       before_bought_things = BoughtThing.where(user_id: params[:user_id]).where(thing_id: params[:thing_id]).all
-      buy_interval = Array.new
-      if before_bought_things.size != 0
+      if before_bought_things.size > 1 
+        buy_interval = Array.new
         for i in 0..before_bought_things.size - 2
            b1 = Date.new(before_bought_things[i+1].created_at.year, before_bought_things[i+1].created_at.month, before_bought_things[i+1].created_at.day)
            b2 = Date.new(before_bought_things[i].created_at.year, before_bought_things[i].created_at.month, before_bought_things[i].created_at.day)
            interval = b1 - b2 # ここ有理数で帰ってくる
+           if interval == 0
+             next
+           end
            puts(interval)
            if interval > 0
             buy_interval.push(interval)
            end
         end
-        puts(buy_interval.sum)
-        puts(buy_interval.size)
-        interval_average = buy_interval.sum / buy_interval.size
-        next_buy_date = Date.today + interval_average
+        if buy_interval.sum == 0 || buy_interval.size == 0
+          b = Date.new(before_bought_things[0].created_at.year, before_bought_things[0].created_at.month, before_bought_things[0].created_at.day)
+          next_buy_date = Date.today + (Date.today - b)
+        else
+          interval_average = buy_interval.sum / buy_interval.size
+          next_buy_date = Date.today + interval_average
+        end
       else
         next_buy_date = Date.new(1990, 1, 1)
       end
