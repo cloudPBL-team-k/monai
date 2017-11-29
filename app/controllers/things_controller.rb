@@ -15,7 +15,9 @@ class ThingsController < ApplicationController
       # DBに商品がない
       outer_api = OuterApi.new
       @thing = outer_api.get_thing_from_outer_api(jan_code)
-      @thing.save
+      if !@thing.nil?
+        @thing.save
+      end
     else
       # DBに商品がある
       puts("Exist")

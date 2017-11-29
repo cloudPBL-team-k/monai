@@ -13,11 +13,17 @@ class OuterApi
     puts(request_url)
     request = client.get(request_url)
     response = JSON.parse(request.body)
-    puts(response["ResultSet"]["0"]["Result"]["0"])
-    thing = Thing.new
-    # TODO ひどいデータの取り出し方なので良い感じに
-    thing.name = response["ResultSet"]["0"]["Result"]["0"]["Name"]
-    thing.jancode = jan_code
-    return thing
+    result_set = response["ResultSet"]
+    total_result_available = result_set["totalResultsAvailable"]
+    total_result_returned = result_set["totalResultsReturned"]
+    if total_result_available.to_i != 0 || total_result_returned.to_i != 0
+      first_result_position = result_set["firstResultPosition"]
+      api_thing = result_set["0"]["Result"][first_result_position]
+      thing = Thing.new
+      thing.name = api_thing["Name"]
+      thing.jancode = jan_code
+      return thing
+    end
+    return nil
   end
 end
