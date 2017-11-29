@@ -20,8 +20,7 @@ class ThingsController < ApplicationController
       end
     else
       # DBに商品がある
-      puts("Exist")
-      @thing = Thing.where(:jancode => jan_code)
+      @thing = Thing.where(:jancode => jan_code).first
     end
 
     render json: @thing
