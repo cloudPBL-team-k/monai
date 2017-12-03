@@ -3,7 +3,13 @@ class ExpendablesController < ApplicationController
 
   # GET /expendables
   def index
-    @expendables = Expendable.all
+#    @expendables = Expendable.all
+    user_id = params[:user_id]
+    if user_id == nil
+      @expendables = Expendable.all
+    else
+      @expendables = Expendable.where(user_id: user_id).all
+    end
 
     render json: @expendables
   end
