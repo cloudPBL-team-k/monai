@@ -17,6 +17,8 @@ class ThingsController < ApplicationController
       @thing = outer_api.get_thing_from_outer_api(jan_code)
       if !@thing.nil?
         @thing.save
+      else
+        render json: {search_fail: 1}.to_json
       end
     else
       # DBに商品がある
