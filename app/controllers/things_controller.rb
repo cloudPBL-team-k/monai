@@ -19,6 +19,7 @@ class ThingsController < ApplicationController
         @thing.save
       else
         render json: {search_fail: 1}.to_json
+        return
       end
     else
       # DBに商品がある
