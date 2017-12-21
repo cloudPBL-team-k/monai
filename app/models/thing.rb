@@ -1,6 +1,7 @@
 class Thing < ApplicationRecord
   has_many :expendables
   has_many :thing_aliases
+  has_many :bought_thins
 
   # ユーザ別名取得
   def get_thing_with_alias
