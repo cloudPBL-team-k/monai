@@ -5,6 +5,17 @@ set :application, "madaaru"
 set :repo_url, "https://github.com/cloudPBL-team-k/monai.git"
 set :deploy_to, "/home/rails/PBL/"
 set :keep_releases, 5
+
+#desc "test"
+#namespace :deploy do
+#    desc 'echo'
+#    task :railsup do
+#        on roles(:cloud_rails) do
+#            execute "~/rails.sh"
+#        end
+#    end
+#end
+
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
