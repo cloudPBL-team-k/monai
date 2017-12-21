@@ -3,9 +3,22 @@ class BoughtThingsController < ApplicationController
 
   # GET /bought_things
   def index
-    @bought_things = BoughtThing.all
-
-    render json: @bought_things
+    user_id = params[:user_id]
+    if user_id.nil?
+      head 400
+    else
+      @bought_things = BoughtThing.joins(:thing).where(user_id: user_id).select("bought_things.*,things.name").all.to_a.map(&:serializable_hash)
+      @aliases = ThingAlias.where(user_id: user_id).select("thing_id","alias").all.to_a.map(&:serializable_hash)
+      for bt in @bought_things do
+        ali = @aliases.select{|i| i["thing_id"]==bt["thing_id"]}[0]
+        if ali.nil?
+          bt["alias"] = ""
+        else
+          bt["alias"] = ali["alias"]
+        end
+      end
+      render json: @bought_things
+    end
   end
 
   # GET /bought_things/1

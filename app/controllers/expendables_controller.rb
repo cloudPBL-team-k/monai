@@ -3,7 +3,22 @@ class ExpendablesController < ApplicationController
 
   # GET /expendables
   def index
-    @expendables = Expendable.all
+    user_id = params[:user_id]
+    if user_id == nil
+      head 400
+      return
+    else
+      @expendables = Expendable.joins(:thing).where(user_id: user_id).select("things.name,expendables.*").all.to_a.map(&:serializable_hash)
+      @aliases = ThingAlias.where(user_id: user_id).select("thing_id","alias").all.to_a.map(&:serializable_hash)
+      for exp in @expendables do
+        ali = @aliases.select{|i| i["thing_id"]==exp["thing_id"]}[0]
+        if ali.nil?
+          exp["alias"] = ""
+        else
+          exp["alias"] = ali["alias"]
+        end
+      end
+    end
 
     render json: @expendables
   end
