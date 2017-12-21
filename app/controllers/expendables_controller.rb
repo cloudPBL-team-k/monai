@@ -8,15 +8,15 @@ class ExpendablesController < ApplicationController
       head 400
       return
     else
-      @expendables = Expendable.joins(:thing).select("things.name,expendables.*").all.to_a.map(&:serializable_hash)
+      @expendables = Expendable.joins(:thing).where(user_id: user_id).select("things.name,expendables.*").all.to_a.map(&:serializable_hash)
       @aliases = ThingAlias.where(user_id: user_id).select("thing_id","alias").all.to_a.map(&:serializable_hash)
       for exp in @expendables do
         ali = @aliases.select{|i| i["thing_id"]==exp["thing_id"]}[0]
         if ali.nil?
-          head 400
-          return
+          exp["alias"] = ""
+        else
+          exp["alias"] = ali["alias"]
         end
-        exp["alias"] = ali["alias"]
       end
     end
 
