@@ -3,6 +3,7 @@ lock "~> 3.10.1"
 
 set :application, "madaaru"
 set :repo_url, "https://github.com/cloudPBL-team-k/monai.git"
+set :branch, "frip"
 set :deploy_to, "/home/rails/PBL/"
 set :keep_releases, 5
 
