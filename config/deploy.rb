@@ -6,15 +6,23 @@ set :repo_url, "https://github.com/cloudPBL-team-k/monai.git"
 set :deploy_to, "/home/rails/PBL/"
 set :keep_releases, 5
 
-#desc "test"
-#namespace :deploy do
-#    desc 'echo'
-#    task :railsup do
-#        on roles(:cloud_rails) do
-#            execute "~/rails.sh"
+namespace :deploy do
+    desc 'Restart application'
+    task :restart do
+      invoke 'unicorn:restart'
+    end
+#      after :restart, :clear_cache do
+#        on roles(:cloud_rails), in: :groups, limit: 3, wait: 10 do
+          # Here we can do anything such as:
+          # within release_path do
+          #   execute :rake, 'cache:clear'
+          # end
 #        end
-#    end
-#end
+#      end
+    
+    end
+
+    after 'deploy:publishing', 'deploy:restart'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

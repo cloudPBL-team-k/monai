@@ -59,6 +59,9 @@
 #     auth_methods: %w(publickey password)
 #     # password: "please use keys"
 #   }
+
+role :cloud_rails, %w{rails@203.104.200.194}
+
 server "203.104.200.194",
 user: "rails",
 ssh_options: {
