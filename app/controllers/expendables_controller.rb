@@ -4,13 +4,21 @@ class ExpendablesController < ApplicationController
   # GET /expendables
   def index
     user_id = params[:user_id]
+
     if user_id == nil
+      # user_idパラメータがからだったらHTTP Status400
       head 400
       return
     else
+      # ExpendableテーブルとThingテーブルを内部結合(JOIN)してuser_idで絞り込み(where)
+      # ThingテーブルのnameとExpendableテーブルのすべての列を取得する
       @expendables = Expendable.joins(:thing).where(user_id: user_id).select("things.name,expendables.*").all.to_a.map(&:serializable_hash)
+      # ThingAliasテーブルからuser_idで絞り込んでthing_idとaliasだけ取得する
       @aliases = ThingAlias.where(user_id: user_id).select("thing_id","alias").all.to_a.map(&:serializable_hash)
+
+      # @expendables(user_idの人が買った商品のリスト)のそれぞれにaliasを組み込んでいく
       for exp in @expendables do
+        # @aliasリストの中から@expendablesのthing_idと一致するものを選んで@expendablesの要素に組み込んでいく
         ali = @aliases.select{|i| i["thing_id"]==exp["thing_id"]}[0]
         if ali.nil?
           exp["alias"] = ""
@@ -20,6 +28,7 @@ class ExpendablesController < ApplicationController
       end
     end
 
+    # ハッシュをJSONとしてクライアントに返す
     render json: @expendables
   end
 
