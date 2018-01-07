@@ -32,6 +32,21 @@ class ExpendablesController < ApplicationController
   def create
     @expendable = Expendable.new(expendable_params)
 
+    # aliasがあれば登録
+    if params.has_key?(:alias)
+      @ta = ThingAlias.where(user_id: params[:user_id]).where(thing_id: params[:thing_id])
+      if @ta.exists?
+        # alias更新
+        @ta.update_all(alias: params[:alias], updated_at: Time.now)
+      else
+        # alias新規登録
+        @ta = ThingAlias.new(user_id: params[:user_id], thing_id: params[:thing_id], alias: params[:alias])
+        if !@ta.save
+          render json: @ta.errors, status: :unprocessable_entity
+        end
+      end
+    end
+
     if @expendable.save
       render json: @expendable, status: :created, location: @expendable
     else

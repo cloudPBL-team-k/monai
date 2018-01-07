@@ -38,6 +38,10 @@ class BuyThingsController < ApplicationController
     @buy_thing.destroy
   end
 
+  # GET /buy_things/exists_bought
+  def exists_bought
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_buy_thing
