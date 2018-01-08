@@ -38,6 +38,18 @@ class UsersController < ApplicationController
     @user.destroy
   end
 
+  # POST /login
+  def login
+    username = params[:name]
+    @user = User.where(name: username)
+    if @user.exists?
+      render json: @user.first
+    else
+      dummy = User.new(id: 0)
+      render json: dummy
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user

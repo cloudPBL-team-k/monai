@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   get '/things/search', to: 'things#search'
   get '/buy_things/exists_bought', to: 'buy_things#exists_bought'
+  post '/login', to: 'users#login'
   resources :expendables
   resources :bought_things
   resources :buy_things
