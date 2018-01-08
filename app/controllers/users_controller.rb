@@ -43,7 +43,9 @@ class UsersController < ApplicationController
     username = params[:name]
     @user = User.where(name: username)
     if @user.exists?
-      render json: @user.first
+      login_info = @user.all.to_a.map(&:serializable_hash)
+      login_info[0]["token"] = SecureRandom.hex(32)
+      render json: login_info[0]
     else
       dummy = User.new(id: 0)
       render json: dummy
