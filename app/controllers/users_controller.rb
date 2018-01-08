@@ -41,15 +41,21 @@ class UsersController < ApplicationController
   # POST /login
   def login
     username = params[:name]
+    input_hashed = params[:hashed]
     @user = User.where(name: username)
     if @user.exists?
-      login_info = @user.all.to_a.map(&:serializable_hash)
-      login_info[0]["token"] = SecureRandom.hex(32)
-      render json: login_info[0]
-    else
-      dummy = User.new(id: 0)
-      render json: dummy
+      login_info = @user.all.to_a.map(&:serializable_hash)[0]
+      # クライアント側の実装が間に合っていないため一旦ハッシュ化による検証は保留
+      # hashed = Digest::SHA512.hexdigest(login_info["name"] + ":::" + login_info["password"])
+      hashed = login_info["password"]
+      if hashed == input_hashed
+        login_info["token"] = SecureRandom.hex(32)
+        render json: login_info
+        return
+      end
     end
+    dummy = User.new(id: 0)
+    render json: dummy
   end
 
   private
