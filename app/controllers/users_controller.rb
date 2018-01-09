@@ -46,8 +46,7 @@ class UsersController < ApplicationController
     if @user.exists?
       login_info = @user.all.to_a.map(&:serializable_hash)[0]
       # クライアント側の実装が間に合っていないため一旦ハッシュ化による検証は保留
-      # hashed = Digest::SHA512.hexdigest(login_info["name"] + ":::" + login_info["password"])
-      hashed = login_info["password"]
+      hashed = Digest::SHA512.hexdigest(login_info["name"] + ":::" + login_info["password"])
       if hashed == input_hashed
         login_info["token"] = SecureRandom.hex(32)
         render json: login_info
