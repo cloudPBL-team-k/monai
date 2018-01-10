@@ -3,8 +3,31 @@ class BuyThingsController < ApplicationController
 
   # GET /buy_things
   def index
-    @buy_things = BuyThing.all
-
+    user_id = params[:user_id]
+    
+        if user_id == nil
+          # user_idパラメータがからだったらHTTP Status400
+          head 400
+          return
+        else
+          # BuyThingテーブルからuser_idで絞り込んでとThingテーブルと内部結合(JOIN)
+          # ThingテーブルのnameとBuyThingテーブルのすべての列を取得する
+          @buy_things = BuyThing.where(user_id: user_id).joins(:thing).select("things.name,buy_things.*").all.to_a.map(&:serializable_hash)
+          # ThingAliasテーブルからuser_idで絞り込んでthing_idとaliasだけ取得する
+          @aliases = ThingAlias.where(user_id: user_id).select("thing_id","alias").all.to_a.map(&:serializable_hash)
+    
+          # @buy_things(user_idの人が買った商品のリスト)のそれぞれにaliasを組み込んでいく
+          for exp in @buy_things do
+            # @aliasリストの中から@buy_thingsのthing_idと一致するものを選んで@buy_thingsの要素に組み込んでいく
+            ali = @aliases.select{|i| i["thing_id"]==exp["thing_id"]}[0]
+            if ali.nil?
+              exp["alias"] = ""
+            else
+              exp["alias"] = ali["alias"]
+            end
+          end
+        end
+    
     render json: @buy_things
   end
 
