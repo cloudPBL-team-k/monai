@@ -34,10 +34,10 @@ class BoughtThingsController < ApplicationController
           head 400
           return
         else
-          # BuyThingテーブルからuser_idで絞り込んで重複するthing_idを除いた内容をThingテーブルと内部結合(JOIN)
-          # ThingテーブルのnameとBuyThingテーブルのすべての列を取得する
+          # BoughtThingテーブルからuser_idで絞り込んで重複するthing_idを除いた内容をThingテーブルと内部結合(JOIN)
+          # ThingテーブルのnameとBoughtThingテーブルのすべての列を取得する
           @bought_things = BoughtThing.where(user_id: user_id).distinct.joins(:thing).select("things.name,bought_things.*").all.to_a.map(&:serializable_hash)
-          # ThingAliasテーブルからuser_idで絞り込んでthing_idとaliasだけ取得する
+          # ThingAliasテーブルからuser_idで絞り込む
           @aliases = ThingAlias.where(user_id: user_id).all.to_a.map(&:serializable_hash)
     
           # @bought_things(user_idの人が買った商品のリスト)のそれぞれにaliasを組み込んでいく
