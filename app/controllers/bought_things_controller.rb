@@ -26,6 +26,35 @@ class BoughtThingsController < ApplicationController
     render json: @bought_thing
   end
 
+  # GET /bought_things/exitsts_bought
+  def exists_bought
+    user_id = params[:user_id]
+        if user_id == nil
+          # user_idパラメータがからだったらHTTP Status400
+          head 400
+          return
+        else
+          # BuyThingテーブルからuser_idで絞り込んで重複するthing_idを除いた内容をThingテーブルと内部結合(JOIN)
+          # ThingテーブルのnameとBuyThingテーブルのすべての列を取得する
+          @bought_things = BoughtThing.where(user_id: user_id).distinct.joins(:thing).select("things.name,bought_things.*").all.to_a.map(&:serializable_hash)
+          # ThingAliasテーブルからuser_idで絞り込んでthing_idとaliasだけ取得する
+          @aliases = ThingAlias.where(user_id: user_id).all.to_a.map(&:serializable_hash)
+    
+          # @bought_things(user_idの人が買った商品のリスト)のそれぞれにaliasを組み込んでいく
+          for exp in @bought_things do
+            # @aliasリストの中から@bought_thingsのthing_idと一致するものを選んで@bought_thingsの要素に組み込んでいく
+            ali = @aliases.select{|i| i["thing_id"]==exp["thing_id"]}[0]
+            if ali.nil?
+              exp["alias"] = ""
+            else
+              exp["alias"] = ali["alias"]
+            end
+          end
+        end
+        
+    render json: @bought_things
+  end
+
   # POST /bought_things
   def create
     @bought_thing = BoughtThing.new(bought_thing_params)
@@ -80,7 +109,7 @@ class BoughtThingsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_bought_thing
-      @bought_thing = BoughtThing.find(params[:id])
+      #@bought_thing = BoughtThing.find(params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.
