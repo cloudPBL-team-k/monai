@@ -41,7 +41,15 @@ class BoughtThingsController < ApplicationController
           @aliases = ThingAlias.where(user_id: user_id).all.to_a.map(&:serializable_hash)
     
           # @bought_things(user_idの人が買った商品のリスト)のそれぞれにaliasを組み込んでいく
+          # @bought_thingsのthing_idをみて一意にして返す
+          uniq_ids = []
+          return_data = []
           for exp in @bought_things do
+            if uniq_ids.include?(exp["thing_id"])
+              next
+            end
+            uniq_ids.push(exp["thing_id"])
+
             # @aliasリストの中から@bought_thingsのthing_idと一致するものを選んで@bought_thingsの要素に組み込んでいく
             ali = @aliases.select{|i| i["thing_id"]==exp["thing_id"]}[0]
             if ali.nil?
@@ -49,10 +57,11 @@ class BoughtThingsController < ApplicationController
             else
               exp["alias"] = ali["alias"]
             end
+            return_data.push(exp)
           end
         end
         
-    render json: @bought_things
+    render json: return_data
   end
 
   # POST /bought_things
